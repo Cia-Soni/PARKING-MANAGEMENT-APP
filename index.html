@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>Parking Management System</title>
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial,sans-serif;
+    }
+
+    body{
+      background:#f4f7fb;
+      min-height:100vh;
+      padding:40px;
+    }
+
+    .container{
+      max-width:1200px;
+      margin:auto;
+    }
+
+    h1{
+      text-align:center;
+      margin-bottom:35px;
+      color:#333;
+    }
+
+    .form-section{
+      background:white;
+      padding:25px;
+      border-radius:12px;
+      box-shadow:0 5px 15px rgba(0,0,0,0.1);
+      margin-bottom:30px;
+    }
+
+    .form-section h2{
+      margin-bottom:20px;
+      color:#222;
+    }
+
+    .form-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+      gap:15px;
+    }
+
+    input,
+    select{
+      width:100%;
+      padding:12px;
+      border:1px solid #ccc;
+      border-radius:6px;
+      font-size:15px;
+    }
+
+    button{
+      margin-top:20px;
+      padding:12px 20px;
+      border:none;
+      background:#007bff;
+      color:white;
+      border-radius:6px;
+      cursor:pointer;
+      font-size:15px;
+    }
+
+    button:hover{
+      background:#0056b3;
+    }
+
+    .parking-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+      gap:20px;
+    }
+
+    .parking-card{
+      background:white;
+      border-radius:12px;
+      padding:20px;
+      box-shadow:0 5px 15px rgba(0,0,0,0.1);
+      transition:0.3s;
+    }
+
+    .parking-card:hover{
+      transform:translateY(-5px);
+    }
+
+    .parking-card h3{
+      margin-bottom:12px;
+      color:#222;
+    }
+
+    .parking-card p{
+      margin-bottom:10px;
+      color:#555;
+      line-height:1.6;
+    }
+
+    .status{
+      display:inline-block;
+      padding:6px 12px;
+      border-radius:20px;
+      color:white;
+      font-size:13px;
+      margin-bottom:12px;
+    }
+
+    .occupied{
+      background:red;
+    }
+
+    .available{
+      background:green;
+    }
+
+    .buttons{
+      margin-top:15px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .delete-btn{
+      background:red;
+    }
+
+    .delete-btn:hover{
+      background:darkred;
+    }
+
+    .update-btn{
+      background:orange;
+    }
+
+    .update-btn:hover{
+      background:darkorange;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>Parking Management System</h1>
+
+  <!-- FORM -->
+
+  <div class="form-section">
+
+    <h2>Add Vehicle Entry</h2>
+
+    <div class="form-grid">
+
+      <input type="text"
+             id="ownerName"
+             placeholder="Owner Name">
+
+      <input type="text"
+             id="vehicleNumber"
+             placeholder="Vehicle Number">
+
+      <input type="text"
+             id="vehicleType"
+             placeholder="Vehicle Type">
+
+      <input type="text"
+             id="slotNumber"
+             placeholder="Parking Slot">
+
+      <select id="status">
+
+        <option value="Occupied">
+          Occupied
+        </option>
+
+        <option value="Available">
+          Available
+        </option>
+
+      </select>
+
+    </div>
+
+    <button onclick="addVehicle()">
+
+      Add Parking Record
+
+    </button>
+
+  </div>
+
+  <!-- PARKING RECORDS -->
+
+  <div class="parking-grid"
+       id="parkingGrid">
+
+  </div>
+
+</div>
+
+<script>
+
+  let vehicles = [
+
+    {
+
+      owner:"Rahul",
+
+      number:"KL 01 AB 1234",
+
+      type:"Car",
+
+      slot:"A12",
+
+      status:"Occupied"
+
+    },
+
+    {
+
+      owner:"Anjali",
+
+      number:"KL 07 XY 7788",
+
+      type:"Bike",
+
+      slot:"B05",
+
+      status:"Available"
+
+    }
+
+  ];
+
+
+  function displayVehicles(){
+
+    const parkingGrid =
+    document.getElementById('parkingGrid');
+
+    parkingGrid.innerHTML = "";
+
+    vehicles.forEach((vehicle,index)=>{
+
+      const statusClass =
+      vehicle.status === "Occupied"
+      ? "occupied"
+      : "available";
+
+      parkingGrid.innerHTML += `
+
+        <div class="parking-card">
+
+          <span class="status ${statusClass}">
+            ${vehicle.status}
+          </span>
+
+          <h3>${vehicle.owner}</h3>
+
+          <p>
+            <strong>Vehicle Number:</strong>
+            ${vehicle.number}
+          </p>
+
+          <p>
+            <strong>Vehicle Type:</strong>
+            ${vehicle.type}
+          </p>
+
+          <p>
+            <strong>Parking Slot:</strong>
+            ${vehicle.slot}
+          </p>
+
+          <div class="buttons">
+
+            <button class="update-btn"
+                    onclick="toggleStatus(${index})">
+
+              Change Status
+
+            </button>
+
+            <button class="delete-btn"
+                    onclick="deleteVehicle(${index})">
+
+              Delete
+
+            </button>
+
+          </div>
+
+        </div>
+
+      `;
+
+    });
+
+  }
+
+
+  function addVehicle(){
+
+    const owner =
+    document.getElementById('ownerName').value;
+
+    const number =
+    document.getElementById('vehicleNumber').value;
+
+    const type =
+    document.getElementById('vehicleType').value;
+
+    const slot =
+    document.getElementById('slotNumber').value;
+
+    const status =
+    document.getElementById('status').value;
+
+
+    if(owner === "" ||
+       number === "" ||
+       type === "" ||
+       slot === ""){
+
+      alert("Please fill all fields");
+
+      return;
+
+    }
+
+    vehicles.push({
+
+      owner,
+      number,
+      type,
+      slot,
+      status
+
+    });
+
+    displayVehicles();
+
+    document.getElementById('ownerName').value = "";
+    document.getElementById('vehicleNumber').value = "";
+    document.getElementById('vehicleType').value = "";
+    document.getElementById('slotNumber').value = "";
+
+  }
+
+
+  function deleteVehicle(index){
+
+    vehicles.splice(index,1);
+
+    displayVehicles();
+
+  }
+
+
+  function toggleStatus(index){
+
+    if(vehicles[index].status === "Occupied"){
+
+      vehicles[index].status = "Available";
+
+    }
+
+    else{
+
+      vehicles[index].status = "Occupied";
+
+    }
+
+    displayVehicles();
+
+  }
+
+
+  displayVehicles();
+
+</script>
+
+</body>
+</html>
